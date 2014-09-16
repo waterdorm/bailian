@@ -1,0 +1,45 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+int Decimal(int a,int B)
+{
+	int n = 0;
+	int nB = 1;
+	while (true)
+	{
+		n = n + (a%B)*nB;
+		a = a/B;
+		nB = nB * B;
+		if( 0 == a/B)
+		{
+		//	n = n + (a%B)*nB;
+			break;
+		}
+	}
+	return n;
+}
+
+int main(int argc, char** argv) {
+	int nCases = 0;
+	int a,b,sum,B;
+	int da,db,dsum;//㊣赤那???車|那?????米?那y?米 
+	int i,j;
+	scanf("%d",&nCases);
+	for(i = 0;i < nCases; i++)
+	{
+		scanf("%d %d %d",&a,&b,&sum);
+		for ( j = 2; j <= 16; j++)
+		{
+			da = Decimal(a,j);
+			db = Decimal(b,j);
+			dsum = Decimal(sum,j);
+			if( dsum == (da * db))
+				break;
+		}
+		if ( j > 16)
+			printf("%d\n",0);
+		else printf("%d\n",j);
+	}
+	return 0;
+}

@@ -1,0 +1,62 @@
+  #include <stdio.h> 
+
+  #include <stdio.h> 
+  #include <stdlib.h> 
+  bool concatenate(int, int, int, int); //递归函数，判断某个长度是否是木棒可能的原始长度
+  int compare( const void *arg1, const void *arg2 ) //  为 qsort 准备的比较函数
+  { 
+        return *(int *)arg2 - *(int *)arg1; 
+  } 
+  int sticks[100]; //记录每个木棒的长度，按长度降序排列
+  bool used[100]; //记录木棒被使用的情况
+  int main() 
+  { 
+          int n; 
+          scanf("%d", &n); 
+          while(n != 0){ 
+                  int i, sum = 0, len;    //sum 是所有木棒的总长度
+                  for(i = 0; i < n; i++){ //初始化，读入木棒长度
+                          used[i] = false; 
+                          scanf("%d", &(sticks[i])); 
+                          sum += sticks[i]; 
+                  } 
+                  qsort(sticks, n, sizeof(int), compare); //将木棒按长度降序排列
+                  len = sticks[0]; //len  的最小可能取值等于木棒中最长的一段
+                  for(i = len; i <= sum; i++){ //按升序枚举木棒的可能长度
+                          if (sum % i != 0 )    continue;   
+                          //如果该长度不能整除木棒总长度，则尝试下一可能长度
+                          if ( concatenate(n, n, 0, i) ) {   
+                          //用递归函数判定 n 根木棒是否可能是 i 长度的原始木棒削出来的
+                                  printf("%d\n", i); 
+                                  break; 
+                          } 
+                  } 
+                  scanf("%d", &n); 
+          } 
+	return 0;
+  } 
+
+ bool concatenate(int totalSticks, int unusedSticks,int left, int len){ 
+   //totalSiticks 是木棒的总数，
+   //unusedSticks 是未被拼到长度为 len 的原始木棒中的木棒数目
+   //left 是当前正在拼得木棒的剩余长度
+   //len 是正在尝试的原始木棒长度
+         int i; 
+         if(unusedSticks == 0 && left == 0) return true;   
+         //  如果所有木棒都被放到原始长度的木棒中，并且剩余长度是 0，
+         //  则表示 len 是一个合理的原始长度
+         if(left == 0) left = len; //如果当前木棒剩余为 0，则开始拼装一个新的原始长度木棒
+         for(i=0; i < totalSticks; i++){ //从头到尾寻找可用的木棒
+                 if(used[i] == true)    continue;    //如果已经用了，跳过
+                 if(sticks[i] > left)    continue; //如果长度比当前的空余大，跳过
+                 used[i] = true; //否则尝试把这个木棒拼入正在尝试的木棒
+                 if(concatenate(totalSticks, unusedSticks - 1, left - sticks[i], len))    return true; 
+                 //unusedSticks  和 left 都减小，向下递归
+                 used[i] = false; //退出上次尝试的木棒，准备尝试下一个木棒
+                 if(sticks[i] == left || left == len) break;   
+                 //如果当前尝试的是某个原始木棒中的第一个位置或最后一个位置，
+                 //并且导致最终失败，则不必再在这个位置上尝试余下的木棒
+         } 
+         return false; 
+   } 
+
